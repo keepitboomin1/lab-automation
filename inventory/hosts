@@ -1,0 +1,7 @@
+[lab]
+rhcsa1.example.com
+rhcsa2.example.com
+
+[lab:vars]
+ansible_user=student
+ansible_become=true
