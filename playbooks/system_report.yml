@@ -1,0 +1,48 @@
+---
+- name: System information report
+  hosts: lab
+  gather_facts: true
+  become: false
+
+  tasks:
+
+    - name: Display system report
+      ansible.builtin.debug:
+        msg:
+          - "===== {{ ansible_fqdn }} ====="
+          - "OS          : {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Kernel      : {{ ansible_kernel }}"
+          - "CPU cores   : {{ ansible_processor_vcpus }}"
+          - "Total RAM   : {{ ansible_memtotal_mb }} MB"
+          - "IP Address  : {{ ansible_default_ipv4.address }}"
+          - "Gateway     : {{ ansible_default_ipv4.gateway }}"
+
+    - name: Check disk usage
+      ansible.builtin.command:
+        cmd: df -h /
+      register: disk_usage
+      changed_when: false
+
+    - name: Display disk usage
+      ansible.builtin.debug:
+        msg: "{{ disk_usage.stdout_lines }}"
+
+    - name: Check memory usage
+      ansible.builtin.command:
+        cmd: free -h
+      register: memory_usage
+      changed_when: false
+
+    - name: Display memory usage
+      ansible.builtin.debug:
+        msg: "{{ memory_usage.stdout_lines }}"
+
+    - name: Check system uptime
+      ansible.builtin.command:
+        cmd: uptime
+      register: uptime
+      changed_when: false
+
+    - name: Display uptime
+      ansible.builtin.debug:
+        msg: "[{{ ansible_hostname }}] {{ uptime.stdout.strip() }}"
