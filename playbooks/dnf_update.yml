@@ -1,0 +1,17 @@
+---
+- name: Update all packages on lab machines
+  hosts: lab
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Run dnf update
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+      register: update_result
+
+    - name: Report update status
+      ansible.builtin.debug:
+        msg: "[{{ inventory_hostname }}] -- {{ 'PACKAGES UPDATED' if update_result.changed else 'ALREADY UP TO DATE' }}"
