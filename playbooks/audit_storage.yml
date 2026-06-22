@@ -1,0 +1,27 @@
+---
+- name: Check audit log storage space
+  hosts: lab
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Check filesystem usage for audit directory
+      ansible.builtin.command:
+        cmd: df -h /var/log/audit
+      register: fs_usage
+      changed_when: false
+
+    - name: Check audit directory size
+      ansible.builtin.command:
+        cmd: du -sh /var/log/audit
+      register: dir_size
+      changed_when: false
+
+    - name: Display storage report
+      ansible.builtin.debug:
+        msg:
+          - "[{{ inventory_hostname }}] === Audit Storage Report ==="
+          - "{{ fs_usage.stdout_lines[0] }}"
+          - "{{ fs_usage.stdout_lines[1] }}"
+          - "Audit dir size  : {{ dir_size.stdout }}"
